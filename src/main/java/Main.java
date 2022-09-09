@@ -1,5 +1,4 @@
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.List;
 
 public class Main {
@@ -7,6 +6,7 @@ public class Main {
     private static Connection getConnection() {
         try {
             Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost/ovchip", "postgres", "new_password");
+            System.out.println("/// Connection Opened ///");
             return connection;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -14,18 +14,11 @@ public class Main {
         return null;
     }
 
-    /**
-     * P2. Reiziger DAO: persistentie van een klasse
-     *
-     * Deze methode test de CRUD-functionaliteit van de Reiziger DAO
-     *
-     * @throws SQLException
-     */
-    private static void testReizigerDAO(ReizigerDAO rdao) throws SQLException {
+    private static void testReizigerDAO(ReizigerDAO rdao, AdresDAO adao) throws SQLException {
         System.out.println("\n---------- Test ReizigerDAO -------------");
 
         // Haal alle reizigers op uit de database
-        List<Reiziger> reizigers = rdao.findAll();
+        List<Reiziger> reizigers = rdao.findAll(adao);
         System.out.println("[Test] ReizigerDAO.findAll() geeft de volgende reizigers:");
         for (Reiziger r : reizigers) {
             System.out.println(r);
@@ -34,46 +27,81 @@ public class Main {
 
         // Get reiziger by geboortedatum
         System.out.println("[Test] ReizigerDAO.findByGeboortedatum(2002-12-03) geeft de volgende reizigers:");
-        System.out.println(rdao.findByGbdatum("2002-12-03") + "\n");
+        System.out.println(rdao.findByGbdatum("2002-12-03", adao) + "\n");
 
         // Get reiziger by id
         System.out.println("[Test] ReizigerDAO.findById(2) geeft de volgende reiziger:");
-        System.out.println(rdao.findById(2) + "\n");
+        System.out.println(rdao.findById(2, adao) + "\n");
+    }
 
-        // Maak een nieuwe reiziger aan en persisteer deze in de database
-        String gbdatum = "1981-03-14";
-        Reiziger sietske = new Reiziger(77, "S", "", "Boers", Date.valueOf(gbdatum));
-        System.out.print("[Test] Eerst " + reizigers.size() + " reizigers, na ReizigerDAO.save() ");
+    private static void testAdresDao(AdresDAO adao, ReizigerDAO rdao) throws SQLException {
+        try {
+            System.out.println("\n---------- Test AdresDAO -------------");
 
-        rdao.save(sietske);
+            // Haal alle adressen op uit de database
+            List<Adres> adresList = adao.findAll();
+            System.out.println("[Test] AdresDAO.findAll() geeft de volgende adressen:");
+            for (Adres a : adresList) {
+                System.out.println(a);
+            }
+            System.out.println();
 
-        reizigers = rdao.findAll();
-        System.out.println(reizigers.size() + " reiziger\n");
+            // get adres from reiziger
+            System.out.println("AdresDAO.findbyReiziger(1) gives: ");
+            System.out.println(adao.findByReiziger(rdao.findById(1, adao)) + "\n");
 
-        // Update
-        sietske.setAchternaam("Koning");
-        System.out.println("[Test] Reiziger voor ReizigerDAO.Update(): ");
-        System.out.println(rdao.findById(sietske.getId()));
+            // Maak een nieuwe reiziger aan en persisteer deze in de database
+            adresList = adao.findAll();
+            System.out.print("[Test] Eerst " + adresList.size() + " adressen, na AdresDAO.save() ");
+            Adres adres = new Adres(69, "1212LK", "3A", "Brugweg", "Utrecht");
 
-        rdao.update(sietske);
+            String gbdatum = "1981-03-14";
+            Reiziger sietske = new Reiziger(77, "S", "", "Boers", Date.valueOf(gbdatum), adres);
+            rdao.save(sietske,adao);
 
-        System.out.println("Reiziger na update:");
-        System.out.println(rdao.findById(sietske.getId()) + "\n");
+            adresList = adao.findAll();
+            System.out.println(adresList.size() + " adressen\n");
 
-        // Delete
-        reizigers = rdao.findAll();
-        System.out.print("[Test] Eerst " + reizigers.size() + " reizigers, na ReizigerDAO.delete() ");
+            // Update Adres
+            adres.setHuisnummer("3");
+            System.out.println("[Test] adressen voor AdresDAO.Update(): ");
+            System.out.println(adao.findById(sietske.getAdres().getId()));
 
-        rdao.delete(sietske);
+            adao.update(adres);
 
-        reizigers = rdao.findAll();
-        System.out.println(reizigers.size() + " reizigers\n");
+            System.out.println("Adressen na update:");
+            System.out.println(adao.findById(adres.getId()) + "\n");
+
+            // Update Reiziger
+            sietske.setAchternaam("Koning");
+            System.out.println("[Test] Reiziger voor ReizigerDAO.Update(): ");
+            System.out.println(rdao.findById(sietske.getId(), adao));
+
+            rdao.update(sietske);
+
+            System.out.println("Reiziger na update:");
+            System.out.println(rdao.findById(sietske.getId(), adao) + "\n");
+
+            // Delete Adres
+            adresList = adao.findAll();
+            System.out.print("[Test] Eerst " + adresList.size() + " adressen, na AdresDAO.delete() ");
+
+            adao.delete(sietske.getAdres());
+
+            adresList = adao.findAll();
+            System.out.println(adresList.size() + " adressen\n");
+
+            // Delete Reiziger
+            rdao.delete(sietske);
+        }
+        catch (Exception e) {e.printStackTrace();}
     }
 
     private static void closeConnection(Connection connection) {
         if (connection != null) {
             try {
                 connection.close();
+                System.out.println("/// Connection Closed ///");
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -83,8 +111,11 @@ public class Main {
     public static void main(String[] args) throws SQLException {
         Connection connection = getConnection();
 
+        AdresDAO adao= new AdresDAOPsql(connection);
         ReizigerDAO rdao= new ReizigerDAOPsql(connection);
-        testReizigerDAO(rdao);
+
+        testReizigerDAO(rdao, adao);
+        testAdresDao(adao,rdao);
 
         closeConnection(connection);
     }

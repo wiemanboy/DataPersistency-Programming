@@ -9,8 +9,7 @@ public class ReizigerDAOPsql implements ReizigerDAO{
         this.connection = connection;
     }
 
-    @Override
-    public boolean save(Reiziger reiziger) throws SQLException {
+    public boolean save(Reiziger reiziger, AdresDAO adao) throws SQLException {
         String q = "INSERT INTO reiziger VALUES (?, ?, ?, ?, ?)";
 
         PreparedStatement pst = connection.prepareStatement(q);
@@ -22,6 +21,8 @@ public class ReizigerDAOPsql implements ReizigerDAO{
         pst.setDate(5, reiziger.getGeboortedatum());
 
         pst.execute();
+
+        adao.save(reiziger.getAdres());
         return true;
     }
 
@@ -56,7 +57,7 @@ public class ReizigerDAOPsql implements ReizigerDAO{
     }
 
     @Override
-    public Reiziger findById(int id) throws SQLException {
+    public Reiziger findById(int id, AdresDAO adao) throws SQLException {
         String q = "SELECT * FROM reiziger WHERE reiziger_id = ?";
         PreparedStatement pst = connection.prepareStatement(q);
         pst.setInt(1, id);
@@ -64,17 +65,21 @@ public class ReizigerDAOPsql implements ReizigerDAO{
 
         result.next();
 
-        return new Reiziger(
+        Reiziger reiziger =  new Reiziger(
                 result.getInt("reiziger_id"),
                 result.getString("voorletters"),
                 result.getString("tussenvoegsel"),
                 result.getString("achternaam"),
                 result.getDate("geboortedatum")
         );
+
+        reiziger.setAdres(adao.findByReiziger(reiziger));
+
+        return reiziger;
     }
 
     @Override
-    public List<Reiziger> findByGbdatum(String datum) throws SQLException {
+    public List<Reiziger> findByGbdatum(String datum, AdresDAO adao) throws SQLException {
         List<Reiziger> reizigers = new ArrayList<>();
 
         String q = "SELECT * FROM reiziger WHERE geboortedatum = ?";
@@ -83,20 +88,22 @@ public class ReizigerDAOPsql implements ReizigerDAO{
         ResultSet result = pst.executeQuery();
 
         while (result.next()) {
-            reizigers.add(new Reiziger(
-                            result.getInt("reiziger_id"),
-                            result.getString("voorletters"),
-                            result.getString("tussenvoegsel"),
-                            result.getString("achternaam"),
-                            result.getDate("geboortedatum")
-                    )
+            Reiziger reiziger =  new Reiziger(
+                    result.getInt("reiziger_id"),
+                    result.getString("voorletters"),
+                    result.getString("tussenvoegsel"),
+                    result.getString("achternaam"),
+                    result.getDate("geboortedatum")
             );
+
+            reiziger.setAdres(adao.findByReiziger(reiziger));
+            reizigers.add(reiziger);
         }
         return reizigers;
     }
 
     @Override
-    public List<Reiziger> findAll() throws SQLException{
+    public List<Reiziger> findAll(AdresDAO adao) throws SQLException{
         List<Reiziger> reizigers = new ArrayList<>();
 
         String q = "SELECT * FROM reiziger";
@@ -104,14 +111,16 @@ public class ReizigerDAOPsql implements ReizigerDAO{
         ResultSet result = pst.executeQuery();
 
         while (result.next()) {
-            reizigers.add(new Reiziger(
+            Reiziger reiziger =  new Reiziger(
                     result.getInt("reiziger_id"),
                     result.getString("voorletters"),
                     result.getString("tussenvoegsel"),
                     result.getString("achternaam"),
                     result.getDate("geboortedatum")
-                    )
             );
+
+            reiziger.setAdres(adao.findByReiziger(reiziger));
+            reizigers.add(reiziger);
         }
         return reizigers;
     }
