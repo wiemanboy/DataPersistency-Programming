@@ -4,12 +4,14 @@ import java.util.List;
 
 public class ReizigerDAOPsql implements ReizigerDAO{
     Connection connection;
+    AdresDAO adao;
 
-    public ReizigerDAOPsql(Connection connection) {
+    public ReizigerDAOPsql(Connection connection, AdresDAO adao) {
         this.connection = connection;
+        this.adao = adao;
     }
 
-    public boolean save(Reiziger reiziger, AdresDAO adao) throws SQLException {
+    public boolean save(Reiziger reiziger) throws SQLException {
         String q = "INSERT INTO reiziger VALUES (?, ?, ?, ?, ?)";
 
         PreparedStatement pst = connection.prepareStatement(q);
@@ -57,7 +59,7 @@ public class ReizigerDAOPsql implements ReizigerDAO{
     }
 
     @Override
-    public Reiziger findById(int id, AdresDAO adao) throws SQLException {
+    public Reiziger findById(int id) throws SQLException {
         String q = "SELECT * FROM reiziger WHERE reiziger_id = ?";
         PreparedStatement pst = connection.prepareStatement(q);
         pst.setInt(1, id);
@@ -79,7 +81,7 @@ public class ReizigerDAOPsql implements ReizigerDAO{
     }
 
     @Override
-    public List<Reiziger> findByGbdatum(String datum, AdresDAO adao) throws SQLException {
+    public List<Reiziger> findByGbdatum(String datum) throws SQLException {
         List<Reiziger> reizigers = new ArrayList<>();
 
         String q = "SELECT * FROM reiziger WHERE geboortedatum = ?";
@@ -103,7 +105,7 @@ public class ReizigerDAOPsql implements ReizigerDAO{
     }
 
     @Override
-    public List<Reiziger> findAll(AdresDAO adao) throws SQLException{
+    public List<Reiziger> findAll() throws SQLException{
         List<Reiziger> reizigers = new ArrayList<>();
 
         String q = "SELECT * FROM reiziger";
