@@ -2,11 +2,17 @@ import java.sql.*;
 import java.util.List;
 
 public class Main {
+    private static Connection connection;
 
     private static Connection getConnection() {
         try {
-            Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost/ovchip", "postgres", "new_password");
-            System.out.println("/// Connection Opened ///");
+            if (connection == null) {
+                connection = DriverManager.getConnection("jdbc:postgresql://localhost/ovchip", "postgres", "new_password");
+                System.out.println("/// Connection Opened ///");
+            }
+            else {
+                System.out.println("/// Connection Already Opened ///");
+            }
             return connection;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -109,10 +115,13 @@ public class Main {
                 e.printStackTrace();
             }
         }
+        else {
+            System.out.println("/// Connection Already Closed ///");
+        }
     }
 
     public static void main(String[] args) throws SQLException {
-        Connection connection = getConnection();
+        getConnection();
 
         AdresDAO adao= new AdresDAOPsql(connection);
         ReizigerDAO rdao= new ReizigerDAOPsql(connection, adao);
