@@ -54,6 +54,8 @@ public class ReizigerDAOPsql implements ReizigerDAO{
         PreparedStatement pst = connection.prepareStatement(q);
         pst.setInt(1, reiziger.getId());
 
+        adao.delete(adao.findByReiziger(reiziger));
+
         pst.execute();
         return true;
     }
