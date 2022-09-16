@@ -20,7 +20,7 @@ public class Main {
         return null;
     }
 
-    private static void testReizigerDAO(ReizigerDAO rdao, AdresDAO adao) throws SQLException {
+    private static void testReizigerDAO(ReizigerDAO rdao) throws SQLException {
         try {
             System.out.println("\n---------- Test ReizigerDAO -------------");
 
@@ -81,27 +81,15 @@ public class Main {
             System.out.println("Adressen na update:");
             System.out.println(adao.findById(adres.getId()) + "\n");
 
-            // Update Reiziger
-            sietske.setAchternaam("Koning");
-            System.out.println("[Test] Reiziger voor ReizigerDAO.Update(): ");
-            System.out.println(rdao.findById(sietske.getId()));
-
-            rdao.update(sietske);
-
-            System.out.println("Reiziger na update:");
-            System.out.println(rdao.findById(sietske.getId()) + "\n");
-
             // Delete Adres
             adresList = adao.findAll();
             System.out.print("[Test] Eerst " + adresList.size() + " adressen, na AdresDAO.delete() ");
 
-            adao.delete(sietske.getAdres());
+            // Delete Reiziger and Adres
+            rdao.delete(sietske);
 
             adresList = adao.findAll();
             System.out.println(adresList.size() + " adressen\n");
-
-            // Delete Reiziger
-            rdao.delete(sietske);
         }
         catch (Exception e) {e.printStackTrace();}
     }
@@ -126,7 +114,7 @@ public class Main {
         AdresDAO adao= new AdresDAOPsql(connection);
         ReizigerDAO rdao= new ReizigerDAOPsql(connection, adao);
 
-        testReizigerDAO(rdao, adao);
+        testReizigerDAO(rdao);
         testAdresDao(adao,rdao);
 
         closeConnection(connection);
