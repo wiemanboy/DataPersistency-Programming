@@ -15,7 +15,7 @@ public class AdresDAOPsql implements AdresDAO{
 
     @Override
     public boolean save(Adres adres) throws SQLException {
-        String q = "INSERT INTO adres VALUES (?, ?, ?, ?, ?, ?)";
+        String q = "INSERT INTO adres (adres_id, postcode, huisnummer, straat, woonplaats, reiziger_id) VALUES (?, ?, ?, ?, ?, ?)";
 
         PreparedStatement pst = connection.prepareStatement(q);
 

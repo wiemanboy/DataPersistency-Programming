@@ -14,7 +14,7 @@ public class ReizigerDAOPsql implements ReizigerDAO{
     }
 
     public boolean save(Reiziger reiziger) throws SQLException {
-        String q = "INSERT INTO reiziger VALUES (?, ?, ?, ?, ?)";
+        String q = "INSERT INTO reiziger (reiziger_id, voorletters, tussenvoegsel, achternaam, geboortedatum) VALUES (?, ?, ?, ?, ?)";
 
         PreparedStatement pst = connection.prepareStatement(q);
 
