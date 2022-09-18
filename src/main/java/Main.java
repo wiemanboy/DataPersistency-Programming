@@ -94,7 +94,78 @@ public class Main {
         catch (Exception e) {e.printStackTrace();}
     }
 
-    private static void closeConnection(Connection connection) {
+    private static void testOVChipDao(OVChipkaartDAO odao, ReizigerDAO rdao) throws SQLException {
+        try {
+            System.out.println("\n---------- Test OVChipkaartDAO -------------");
+
+            // get all ovchipkaart
+            List<OVChipkaart> kaarten = odao.findAll();
+            System.out.println("[Test] OVChipkaartDAO.findAll() geeft de volgende kaarten:");
+            for (OVChipkaart o : kaarten) {
+                System.out.println(o);
+            }
+            System.out.println();
+
+            // get ovchipkaarten from reiziger
+            System.out.println("OVChipkaartDAO.findbyReiziger(2) gives: ");
+            System.out.println(odao.findByReiziger(rdao.findById(2)) + "\n");
+
+            // Maak een nieuwe reiziger aan en persisteer deze in de database
+            Adres adres = new Adres(69, "1212LK", "3A", "Brugweg", "Utrecht");
+
+            String gbdatum = "1981-03-14";
+            Reiziger sietske = new Reiziger(77, "S", "", "Boers", Date.valueOf(gbdatum), adres);
+
+            kaarten = odao.findAll();
+            System.out.print("[Test] Eerst " + kaarten.size() + " kaarten, na OVChipkaartDAO.save() ");
+
+            String geldig = "2023-03-14";
+            OVChipkaart ovChip = new OVChipkaart(12, Date.valueOf(geldig) , 2, 0 ,sietske.getId());
+
+            OVChipkaart ovChip2 = new OVChipkaart(13, Date.valueOf(geldig) , 2, 0 ,sietske.getId());
+
+
+            sietske.addOVChipkaart(ovChip);
+            sietske.addOVChipkaart(ovChip2);
+
+            rdao.save(sietske);
+
+            kaarten = odao.findAll();
+            System.out.println(kaarten.size() + " kaarten\n");
+
+            // Update Adres
+            ovChip.setSaldo(5);
+            System.out.println("[Test] ovChip voor OVChipkaartDAO.Update(): ");
+            System.out.println(odao.findById(ovChip.getKaartNummer()));
+
+            odao.update(ovChip);
+
+            System.out.println("ovChip na update:");
+            System.out.println(odao.findById(ovChip.getKaartNummer()) + "\n");
+
+            // delete ovchip
+            kaarten = odao.findAll();
+            System.out.print("[Test] Eerst " + kaarten.size() + " kaarten, na OVChipkaartDAO.delete() ");
+
+            odao.delete(ovChip);
+
+            kaarten = odao.findAll();
+            System.out.println(kaarten.size() + " kaarten\n");
+
+            // delete reiziger
+            kaarten = odao.findAll();
+            System.out.print("[Test] Eerst " + kaarten.size() + " kaarten, na ReizigerDAO.delete() ");
+
+            rdao.delete(sietske);
+
+            kaarten = odao.findAll();
+            System.out.println(kaarten.size() + " kaarten\n");
+
+        }
+        catch (Exception e) {e.printStackTrace();}
+    }
+
+        private static void closeConnection(Connection connection) {
         if (connection != null) {
             try {
                 connection.close();
@@ -111,11 +182,13 @@ public class Main {
     public static void main(String[] args) throws SQLException {
         getConnection();
 
-        AdresDAO adao= new AdresDAOPsql(connection);
-        ReizigerDAO rdao= new ReizigerDAOPsql(connection, adao);
+        OVChipkaartDAO odao = new OVChipkaartDAOPsql(connection);
+        AdresDAO adao = new AdresDAOPsql(connection);
+        ReizigerDAO rdao = new ReizigerDAOPsql(connection, adao, odao);
 
         testReizigerDAO(rdao);
         testAdresDao(adao,rdao);
+        testOVChipDao(odao,rdao);
 
         closeConnection(connection);
     }

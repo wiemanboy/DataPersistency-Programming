@@ -1,5 +1,6 @@
 import java.sql.Date;
-import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Reiziger {
     private int id;
@@ -8,6 +9,7 @@ public class Reiziger {
     private String achternaam;
     private Date geboortedatum;
     private Adres adres;
+    private List<OVChipkaart> ovChipkaartList = new ArrayList<OVChipkaart>();
 
     public Reiziger(int id, String voorletters, String tussenvoegsel, String achternaam, Date geboortedatum) {
         this.id = id;
@@ -76,6 +78,18 @@ public class Reiziger {
         this.adres = adres;
     }
 
+    public List<OVChipkaart> getOvChipkaartList() {
+        return ovChipkaartList;
+    }
+
+    public void setOvChipkaartList(List<OVChipkaart> ovChipkaartList) {
+        this.ovChipkaartList = ovChipkaartList;
+    }
+
+    public void addOVChipkaart(OVChipkaart ovChip) {
+        ovChipkaartList.add(ovChip);
+    }
+
     @Override
     public String toString() {
         return "#" + id +
@@ -83,6 +97,7 @@ public class Reiziger {
                 " " + tussenvoegsel +
                 " " + achternaam +
                 " (" + geboortedatum + ")" +
-                " " + adres;
+                " " + adres +
+                " " + ovChipkaartList;
     }
 }
