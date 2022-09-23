@@ -76,7 +76,7 @@ public class Main {
             System.out.println("[Test] adressen voor AdresDAO.Update(): ");
             System.out.println(adao.findById(sietske.getAdres().getId()));
 
-            adao.update(adres);
+            rdao.update(sietske);
 
             System.out.println("Adressen na update:");
             System.out.println(adao.findById(adres.getId()) + "\n");
@@ -133,15 +133,18 @@ public class Main {
             kaarten = odao.findAll();
             System.out.println(kaarten.size() + " kaarten\n");
 
-            // Update Adres
+            // Update obchipkaart
             ovChip.setSaldo(5);
+            ovChip2.setSaldo(7);
             System.out.println("[Test] ovChip voor OVChipkaartDAO.Update(): ");
             System.out.println(odao.findById(ovChip.getKaartNummer()));
+            System.out.println(odao.findById(ovChip2.getKaartNummer()));
 
-            odao.update(ovChip);
+            rdao.update(sietske);
 
             System.out.println("ovChip na update:");
-            System.out.println(odao.findById(ovChip.getKaartNummer()) + "\n");
+            System.out.println(odao.findById(ovChip.getKaartNummer()));
+            System.out.println(odao.findById(ovChip2.getKaartNummer()) + "\n");
 
             // delete ovchip
             kaarten = odao.findAll();

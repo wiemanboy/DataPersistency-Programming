@@ -32,7 +32,6 @@ public class ReizigerDAOPsql implements ReizigerDAO{
             odao.save(o);
         }
 
-
         return true;
     }
 
@@ -53,6 +52,13 @@ public class ReizigerDAOPsql implements ReizigerDAO{
         pst.setInt(5, reiziger.getId());
 
         pst.execute();
+
+        adao.update(reiziger.getAdres());
+
+        for (OVChipkaart o : reiziger.getOvChipkaartList()) {
+            odao.update(o);
+        }
+
         return true;
     }
 
