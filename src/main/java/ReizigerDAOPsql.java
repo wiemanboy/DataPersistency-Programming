@@ -45,6 +45,8 @@ public class ReizigerDAOPsql implements ReizigerDAO{
         pst.setInt(5, reiziger.getId());
 
         pst.execute();
+
+        adao.update(reiziger.getAdres());
         return true;
     }
 

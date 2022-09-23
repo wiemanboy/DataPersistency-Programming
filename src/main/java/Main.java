@@ -76,7 +76,7 @@ public class Main {
             System.out.println("[Test] adressen voor AdresDAO.Update(): ");
             System.out.println(adao.findById(sietske.getAdres().getId()));
 
-            adao.update(adres);
+            rdao.update(sietske);
 
             System.out.println("Adressen na update:");
             System.out.println(adao.findById(adres.getId()) + "\n");
