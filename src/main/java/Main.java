@@ -182,13 +182,14 @@ public class Main {
     public static void main(String[] args) throws SQLException {
         getConnection();
 
+        ProductDAO pdao = new ProductDAOPsql(connection);
         OVChipkaartDAO odao = new OVChipkaartDAOPsql(connection);
         AdresDAO adao = new AdresDAOPsql(connection);
         ReizigerDAO rdao = new ReizigerDAOPsql(connection, adao, odao);
 
-        testReizigerDAO(rdao);
-        testAdresDao(adao,rdao);
-        testOVChipDao(odao,rdao);
+        //testReizigerDAO(rdao);
+        //testAdresDao(adao,rdao);
+        //testOVChipDao(odao,rdao);
 
         closeConnection(connection);
     }
