@@ -1,3 +1,5 @@
+package Domain;
+
 public class Adres {
     private int id;
     private String postcode;

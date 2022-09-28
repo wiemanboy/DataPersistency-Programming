@@ -1,14 +1,28 @@
+package Domain;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class Product {
     private int productNummer;
     private String naam;
     private String beschrijving;
     private double prijs;
+    private List<OVChipkaart> ovChipkaartList = new ArrayList<>();
 
     public Product(int productNummer, String naam, String beschrijving, double prijs) {
         this.productNummer = productNummer;
         this.naam = naam;
         this.beschrijving = beschrijving;
         this.prijs = prijs;
+    }
+
+    public void addOvChip(OVChipkaart ovChip){
+        ovChipkaartList.add(ovChip);
+    }
+
+    public void removeOvChip(OVChipkaart ovChip){
+        ovChipkaartList.remove(ovChip);
     }
 
     public int getProductNummer() {

@@ -1,4 +1,8 @@
+package Domain;
+
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 public class OVChipkaart {
     private int kaartNummer;
@@ -6,6 +10,7 @@ public class OVChipkaart {
     private int klasse;
     private double saldo;
     private int reizigerId;
+    private List<Product> products = new ArrayList<>();
 
     public OVChipkaart(int kaartNummer, Date gelidgTot, int klasse, double saldo , int reizigerId) {
         this.kaartNummer = kaartNummer;
@@ -13,6 +18,14 @@ public class OVChipkaart {
         this.klasse = klasse;
         this.saldo = saldo;
         this.reizigerId = reizigerId;
+    }
+
+    public void addProduct(Product product){
+        products.add(product);
+    }
+
+    public void removeProduct(Product product){
+        products.remove(product);
     }
 
     public int getKaartNummer() {
@@ -57,7 +70,7 @@ public class OVChipkaart {
 
     @Override
     public String toString() {
-        return "OVChipkaart{" +
+        return "domain.OVChipkaart{" +
                 "#" + kaartNummer +
                 " " + gelidgTot +
                 " " + klasse +

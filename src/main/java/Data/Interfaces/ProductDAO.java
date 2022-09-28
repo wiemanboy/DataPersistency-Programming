@@ -1,3 +1,7 @@
+package Data.Interfaces;
+
+import Domain.Product;
+
 import java.sql.SQLException;
 import java.util.List;
 

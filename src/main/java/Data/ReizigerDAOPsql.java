@@ -1,8 +1,16 @@
+package Data;
+
+import Data.Interfaces.AdresDAO;
+import Data.Interfaces.OVChipkaartDAO;
+import Data.Interfaces.ReizigerDAO;
+import Domain.OVChipkaart;
+import Domain.Reiziger;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ReizigerDAOPsql implements ReizigerDAO{
+public class ReizigerDAOPsql implements ReizigerDAO {
     Connection connection;
     AdresDAO adao;
     OVChipkaartDAO odao;

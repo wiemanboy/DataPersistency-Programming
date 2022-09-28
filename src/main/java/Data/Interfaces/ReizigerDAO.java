@@ -1,3 +1,7 @@
+package Data.Interfaces;
+
+import Domain.Reiziger;
+
 import java.sql.SQLException;
 import java.util.List;
 
