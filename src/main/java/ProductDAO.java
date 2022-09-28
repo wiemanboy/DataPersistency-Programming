@@ -6,4 +6,5 @@ public interface ProductDAO {
     boolean update(Product product) throws SQLException;
     boolean delete(Product product) throws SQLException;
     List<Product> findAll() throws SQLException;
+    Product findById(int id) throws SQLException;
 }

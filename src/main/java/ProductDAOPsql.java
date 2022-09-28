@@ -2,7 +2,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +32,7 @@ public class ProductDAOPsql implements ProductDAO{
         String q = "UPDATE product SET " +
                 "naam = ?," +
                 "beschrijving = ?," +
-                "prijs = ?," +
+                "prijs = ?" +
                 "WHERE product_nummer = ?";
         PreparedStatement pst = connection.prepareStatement(q);
 
@@ -74,5 +73,23 @@ public class ProductDAOPsql implements ProductDAO{
             );
         }
         return products;
+    }
+
+    @Override
+    public Product findById(int id) throws SQLException {
+        String q = "SELECT * FROM product WHERE product_nummer = ?";
+        PreparedStatement pst = connection.prepareStatement(q);
+        pst.setInt(1, id);
+        ResultSet result = pst.executeQuery();
+
+        result.next();
+
+        return (new Product(
+                result.getInt("product_nummer"),
+                result.getString("naam"),
+                result.getString("beschrijving"),
+                result.getDouble("prijs")
+        )
+        );
     }
 }

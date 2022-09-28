@@ -165,6 +165,51 @@ public class Main {
         catch (Exception e) {e.printStackTrace();}
     }
 
+    private static void testProductDAO(ProductDAO pdao){
+        try {
+            System.out.println("\n---------- Test ProductDAO -------------");
+
+            // get all products
+            List<Product> products = pdao.findAll();
+            System.out.println("[Test] ProductDAO.findAll() geeft de volgende kaarten:");
+            for (Product o : products) {
+                System.out.println(o);
+            }
+            System.out.println();
+
+            //save
+            products = pdao.findAll();
+            System.out.print("[Test] Eerst " + products.size() + " kaarten, na ProductDAO.save() ");
+
+            Product product = new Product(7,"testKaart","test",0.0);
+            pdao.save(product);
+
+            products = pdao.findAll();
+            System.out.println(products.size() + " products\n");
+
+            // Update Adres
+            product.setPrijs(7);
+            System.out.println("[Test] product voor ProductDAO.Update(): ");
+            System.out.println(pdao.findById(product.getProductNummer()));
+
+            pdao.update(product);
+
+            System.out.println("product na update:");
+            System.out.println(pdao.findById(product.getProductNummer()));
+            System.out.println();
+
+            //delete
+            products = pdao.findAll();
+            System.out.print("[Test] Eerst " + products.size() + " kaarten, na ProductDAO.delete() ");
+
+            pdao.delete(product);
+
+            products = pdao.findAll();
+            System.out.println(products.size() + " products\n");
+        }
+        catch (Exception e) {e.printStackTrace();}
+    }
+
         private static void closeConnection(Connection connection) {
         if (connection != null) {
             try {
@@ -190,6 +235,7 @@ public class Main {
         //testReizigerDAO(rdao);
         //testAdresDao(adao,rdao);
         //testOVChipDao(odao,rdao);
+        testProductDAO(pdao);
 
         closeConnection(connection);
     }
