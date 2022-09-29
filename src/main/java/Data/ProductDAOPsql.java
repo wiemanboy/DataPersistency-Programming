@@ -1,6 +1,8 @@
 package Data;
 
+import Data.Interfaces.OVChipkaartDAO;
 import Data.Interfaces.ProductDAO;
+import Domain.OVChipkaart;
 import Domain.Product;
 
 import java.sql.Connection;
@@ -12,9 +14,11 @@ import java.util.List;
 
 public class ProductDAOPsql implements ProductDAO {
     private Connection connection;
+    private OVChipkaartDAO odao;
 
-    public ProductDAOPsql(Connection connection) {
+    public ProductDAOPsql(Connection connection, OVChipkaartDAO odao) {
         this.connection = connection;
+        this.odao = odao;
     }
 
     @Override
@@ -29,6 +33,17 @@ public class ProductDAOPsql implements ProductDAO {
         pst.setDouble(4, product.getPrijs());
 
         pst.execute();
+
+        for (OVChipkaart o : product.getOvChipkaartList()) {
+            odao.save(o);
+            q = "INSERT INTO ov_chipkaart_product (kaart_nummer, product_nummer) VALUES (?, ?)";
+
+            pst = connection.prepareStatement(q);
+            pst.setInt(1, o.getKaartNummer());
+            pst.setInt(2, product.getProductNummer());
+
+            pst.execute();
+        }
         return true;
     }
 
@@ -52,11 +67,21 @@ public class ProductDAOPsql implements ProductDAO {
 
     @Override
     public boolean delete(Product product) throws SQLException {
-        String q = "DELETE FROM product WHERE product_nummer = ?";
+        String q = "DELETE FROM ov_chipkaart_product WHERE product_nummer = ?";
         PreparedStatement pst = connection.prepareStatement(q);
         pst.setInt(1, product.getProductNummer());
 
         pst.execute();
+        for (OVChipkaart o : product.getOvChipkaartList()) {
+            odao.delete(o);
+        }
+
+        q = "DELETE FROM product WHERE product_nummer = ?";
+        pst = connection.prepareStatement(q);
+        pst.setInt(1, product.getProductNummer());
+
+        pst.execute();
+
         return true;
     }
 
@@ -85,16 +110,58 @@ public class ProductDAOPsql implements ProductDAO {
         String q = "SELECT * FROM product WHERE product_nummer = ?";
         PreparedStatement pst = connection.prepareStatement(q);
         pst.setInt(1, id);
+        ResultSet resultp = pst.executeQuery();
+
+        resultp.next();
+
+        Product product = new Product(
+                resultp.getInt("product_nummer"),
+                resultp.getString("naam"),
+                resultp.getString("beschrijving"),
+                resultp.getDouble("prijs"));
+
+
+        q = "SELECT o.* FROM ov_chipkaart o\n" +
+        "JOIN ov_chipkaart_product op on o.kaart_nummer = op.kaart_nummer\n" +
+        "WHERE op.product_nummer = ?;";
+
+        pst = connection.prepareStatement(q);
+        pst.setInt(1, resultp.getInt("product_nummer"));
+        ResultSet resulto = pst.executeQuery();
+
+        while (resulto.next()){
+            product.addOvChip(new OVChipkaart(
+                    resulto.getInt("kaart_nummer"),
+                    resulto.getDate("geldig_tot"),
+                    resulto.getInt("klasse"),
+                    resulto.getDouble("saldo"),
+                    resulto.getInt("reiziger_id")
+            ));
+        }
+
+        return product;
+    }
+
+    public List<Product> findByOvChipkaart(OVChipkaart ovChip) throws SQLException {
+        List<Product> products = new ArrayList<>();
+
+        String q = "SELECT p.* FROM product p\n" +
+                "JOIN ov_chipkaart_product op on op.product_nummer = p.product_nummer\n" +
+                "JOIN ov_chipkaart o on o.kaart_nummer = op.kaart_nummer\n" +
+                "WHERE op.kaart_nummer = ?;";
+        PreparedStatement pst = connection.prepareStatement(q);
+        pst.setInt(1, ovChip.getKaartNummer());
         ResultSet result = pst.executeQuery();
 
-        result.next();
-
-        return (new Product(
-                result.getInt("product_nummer"),
-                result.getString("naam"),
-                result.getString("beschrijving"),
-                result.getDouble("prijs")
-        )
-        );
+        while (result.next()) {
+            products.add(new Product(
+                            result.getInt("product_nummer"),
+                            result.getString("naam"),
+                            result.getString("beschrijving"),
+                            result.getDouble("prijs")
+                    )
+            );
+        }
+        return products;
     }
 }

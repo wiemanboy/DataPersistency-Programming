@@ -175,13 +175,26 @@ public class Main {
         catch (Exception e) {e.printStackTrace();}
     }
 
-    private static void testProductDAO(ProductDAO pdao){
+    private static void testProductDAO(ProductDAO pdao, ReizigerDAO rdao){
         try {
+            // make objects
+            Adres adres = new Adres(69, "1212LK", "3A", "Brugweg", "Utrecht");
+            String gbdatum = "1981-03-14";
+            Reiziger sietske = new Reiziger(77, "S", "", "Boers", Date.valueOf(gbdatum), adres);
+            rdao.save(sietske);
+            String geldig = "2023-03-14";
+            OVChipkaart ovChip = new OVChipkaart(1, Date.valueOf(geldig) , 2, 0 ,sietske.getId());
+            OVChipkaart ovChip2 = new OVChipkaart(2, Date.valueOf(geldig) , 2, 0 ,sietske.getId());
+            Product product = new Product(7,"testKaart","test",0.0);
+
+            product.addOvChip(ovChip);
+            product.addOvChip(ovChip2);
+
             System.out.println("\n---------- Test Data.Interfaces.ProductDAO -------------");
 
             // get all products
             List<Product> products = pdao.findAll();
-            System.out.println("[Test] Data.Interfaces.ProductDAO.findAll() geeft de volgende kaarten:");
+            System.out.println("[Test] Data.Interfaces.ProductDAO.findAll() geeft de volgende products:");
             for (Product o : products) {
                 System.out.println(o);
             }
@@ -189,15 +202,22 @@ public class Main {
 
             //save
             products = pdao.findAll();
-            System.out.print("[Test] Eerst " + products.size() + " kaarten, na Data.Interfaces.ProductDAO.save() ");
+            System.out.print("[Test] Eerst " + products.size() + " products, na Data.Interfaces.ProductDAO.save() ");
 
-            Product product = new Product(7,"testKaart","test",0.0);
             pdao.save(product);
 
             products = pdao.findAll();
             System.out.println(products.size() + " products\n");
 
-            // Update domain.Adres
+            // get products from ovChipKaart
+            products = pdao.findByOvChipkaart(ovChip);
+            System.out.println("[Test] Data.Interfaces.ProductDAO.findByOvChipkaart() geeft de volgende products:");
+            for (Product o : products) {
+                System.out.println(o);
+            }
+            System.out.println();
+
+            // Update
             product.setPrijs(7);
             System.out.println("[Test] product voor Data.Interfaces.ProductDAO.Update(): ");
             System.out.println(pdao.findById(product.getProductNummer()));
@@ -210,12 +230,15 @@ public class Main {
 
             //delete
             products = pdao.findAll();
-            System.out.print("[Test] Eerst " + products.size() + " kaarten, na Data.Interfaces.ProductDAO.delete() ");
+            System.out.print("[Test] Eerst " + products.size() + " products, na Data.Interfaces.ProductDAO.delete() ");
 
             pdao.delete(product);
 
             products = pdao.findAll();
             System.out.println(products.size() + " products\n");
+
+
+            rdao.delete(sietske);
         }
         catch (Exception e) {e.printStackTrace();}
     }
@@ -237,15 +260,15 @@ public class Main {
     public static void main(String[] args) throws SQLException {
         getConnection();
 
-        ProductDAO pdao = new ProductDAOPsql(connection);
         OVChipkaartDAO odao = new OVChipkaartDAOPsql(connection);
+        ProductDAO pdao = new ProductDAOPsql(connection, odao);
         AdresDAO adao = new AdresDAOPsql(connection);
         ReizigerDAO rdao = new ReizigerDAOPsql(connection, adao, odao);
 
-        testReizigerDAO(rdao);
-        testAdresDao(adao,rdao);
-        testOVChipDao(odao,rdao);
-        testProductDAO(pdao);
+        //testReizigerDAO(rdao);
+        //testAdresDao(adao,rdao);
+        //testOVChipDao(odao,rdao);
+        testProductDAO(pdao, rdao);
 
         closeConnection(connection);
     }

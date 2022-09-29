@@ -19,10 +19,12 @@ public class Product {
 
     public void addOvChip(OVChipkaart ovChip){
         ovChipkaartList.add(ovChip);
+        ovChip.addProduct(this);
     }
 
     public void removeOvChip(OVChipkaart ovChip){
         ovChipkaartList.remove(ovChip);
+        ovChip.removeProduct(this);
     }
 
     public int getProductNummer() {
@@ -57,6 +59,10 @@ public class Product {
         this.prijs = prijs;
     }
 
+    public List<OVChipkaart> getOvChipkaartList() {
+        return ovChipkaartList;
+    }
+
     @Override
     public String toString() {
         return "{" +
@@ -64,6 +70,7 @@ public class Product {
                 " " + naam +
                 " " + beschrijving +
                 " " + prijs +
+                " " + ovChipkaartList +
                 '}';
     }
 }
