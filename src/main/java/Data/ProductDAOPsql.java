@@ -62,6 +62,44 @@ public class ProductDAOPsql implements ProductDAO {
         pst.setInt(4, product.getProductNummer());
 
         pst.execute();
+
+        List<OVChipkaart> OList = product.getOvChipkaartList();
+        List<OVChipkaart> DBList = findById(product.getProductNummer()).getOvChipkaartList();
+
+
+        for (OVChipkaart o : DBList){
+            if (!OList.contains(o)){
+                //delete
+                q = "DELETE FROM ov_chipkaart_product WHERE product_nummer = ? AND kaart_nummer = ?";
+                pst = connection.prepareStatement(q);
+                pst.setInt(1, product.getProductNummer());
+                pst.setInt(2, o.getKaartNummer());
+
+                pst.execute();
+
+                odao.delete(o);
+            }
+        }
+
+        for (OVChipkaart o : OList){
+            if (!DBList.contains(o)){
+                //save
+                odao.save(o);
+                q = "INSERT INTO ov_chipkaart_product (kaart_nummer, product_nummer) VALUES (?, ?)";
+
+                pst = connection.prepareStatement(q);
+                pst.setInt(1, o.getKaartNummer());
+                pst.setInt(2, product.getProductNummer());
+
+                pst.execute();
+            }
+        }
+
+        //update
+        for (OVChipkaart o : OList) {
+            odao.update(o);
+        }
+
         return true;
     }
 
@@ -94,13 +132,31 @@ public class ProductDAOPsql implements ProductDAO {
         ResultSet result = pst.executeQuery();
 
         while (result.next()) {
-            products.add(new Product(
-                            result.getInt("product_nummer"),
-                            result.getString("naam"),
-                            result.getString("beschrijving"),
-                            result.getDouble("prijs")
-                    )
+            Product product = new Product(
+                    result.getInt("product_nummer"),
+                    result.getString("naam"),
+                    result.getString("beschrijving"),
+                    result.getDouble("prijs")
             );
+            products.add(product);
+
+            q = "SELECT o.* FROM ov_chipkaart o\n" +
+                    "JOIN ov_chipkaart_product op on o.kaart_nummer = op.kaart_nummer\n" +
+                    "WHERE op.product_nummer = ?;";
+
+            pst = connection.prepareStatement(q);
+            pst.setInt(1, product.getProductNummer());
+            ResultSet resulto = pst.executeQuery();
+
+            while (resulto.next()){
+                product.addOvChip(new OVChipkaart(
+                        resulto.getInt("kaart_nummer"),
+                        resulto.getDate("geldig_tot"),
+                        resulto.getInt("klasse"),
+                        resulto.getDouble("saldo"),
+                        resulto.getInt("reiziger_id")
+                ));
+            }
         }
         return products;
     }
@@ -154,13 +210,31 @@ public class ProductDAOPsql implements ProductDAO {
         ResultSet result = pst.executeQuery();
 
         while (result.next()) {
-            products.add(new Product(
+            Product product = new Product(
                             result.getInt("product_nummer"),
                             result.getString("naam"),
                             result.getString("beschrijving"),
                             result.getDouble("prijs")
-                    )
-            );
+                    );
+            products.add(product);
+
+            q = "SELECT o.* FROM ov_chipkaart o\n" +
+                    "JOIN ov_chipkaart_product op on o.kaart_nummer = op.kaart_nummer\n" +
+                    "WHERE op.product_nummer = ?;";
+
+            pst = connection.prepareStatement(q);
+            pst.setInt(1, product.getProductNummer());
+            ResultSet resulto = pst.executeQuery();
+
+            while (resulto.next()){
+                product.addOvChip(new OVChipkaart(
+                        resulto.getInt("kaart_nummer"),
+                        resulto.getDate("geldig_tot"),
+                        resulto.getInt("klasse"),
+                        resulto.getDouble("saldo"),
+                        resulto.getInt("reiziger_id")
+                ));
+            }
         }
         return products;
     }

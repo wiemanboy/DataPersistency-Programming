@@ -185,10 +185,11 @@ public class Main {
             String geldig = "2023-03-14";
             OVChipkaart ovChip = new OVChipkaart(1, Date.valueOf(geldig) , 2, 0 ,sietske.getId());
             OVChipkaart ovChip2 = new OVChipkaart(2, Date.valueOf(geldig) , 2, 0 ,sietske.getId());
+            OVChipkaart ovChip3 = new OVChipkaart(2, Date.valueOf(geldig) , 2, 22 ,sietske.getId());
             Product product = new Product(7,"testKaart","test",0.0);
 
             product.addOvChip(ovChip);
-            product.addOvChip(ovChip2);
+            product.addOvChip(ovChip3);
 
             System.out.println("\n---------- Test Data.Interfaces.ProductDAO -------------");
 
@@ -222,6 +223,9 @@ public class Main {
             System.out.println("[Test] product voor Data.Interfaces.ProductDAO.Update(): ");
             System.out.println(pdao.findById(product.getProductNummer()));
 
+            product.addOvChip(ovChip2);
+            ovChip.setSaldo(20);
+            product.removeOvChip(ovChip3);
             pdao.update(product);
 
             System.out.println("product na update:");

@@ -18,13 +18,17 @@ public class Product {
     }
 
     public void addOvChip(OVChipkaart ovChip){
-        ovChipkaartList.add(ovChip);
-        ovChip.addProduct(this);
+        if (!ovChipkaartList.contains(ovChip)) {
+            ovChipkaartList.add(ovChip);
+            ovChip.addProduct(this);
+        }
     }
 
     public void removeOvChip(OVChipkaart ovChip){
-        ovChipkaartList.remove(ovChip);
-        ovChip.removeProduct(this);
+        if (!ovChipkaartList.contains(ovChip)) {
+            ovChipkaartList.remove(ovChip);
+            ovChip.removeProduct(this);
+        }
     }
 
     public int getProductNummer() {
@@ -61,6 +65,14 @@ public class Product {
 
     public List<OVChipkaart> getOvChipkaartList() {
         return ovChipkaartList;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Product product = (Product) o;
+        return productNummer == product.productNummer;
     }
 
     @Override

@@ -21,11 +21,17 @@ public class OVChipkaart {
     }
 
     public void addProduct(Product product){
-        products.add(product);
+        if (!products.contains(product)) {
+            products.add(product);
+            product.addOvChip(this);
+        }
     }
 
     public void removeProduct(Product product){
-        products.remove(product);
+        if (products.contains(product)) {
+            products.remove(product);
+            product.removeOvChip(this);
+        }
     }
 
     public int getKaartNummer() {
@@ -66,6 +72,14 @@ public class OVChipkaart {
 
     public void setReizigerId(int reizigerId) {
         this.reizigerId = reizigerId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        OVChipkaart that = (OVChipkaart) o;
+        return kaartNummer == that.kaartNummer;
     }
 
     @Override
