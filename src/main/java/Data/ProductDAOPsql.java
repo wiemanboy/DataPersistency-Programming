@@ -138,25 +138,8 @@ public class ProductDAOPsql implements ProductDAO {
                     result.getString("beschrijving"),
                     result.getDouble("prijs")
             );
+            product.setOvChipkaartList(odao.findByProduct(product.getProductNummer()));
             products.add(product);
-
-            q = "SELECT o.* FROM ov_chipkaart o\n" +
-                    "JOIN ov_chipkaart_product op on o.kaart_nummer = op.kaart_nummer\n" +
-                    "WHERE op.product_nummer = ?;";
-
-            pst = connection.prepareStatement(q);
-            pst.setInt(1, product.getProductNummer());
-            ResultSet resulto = pst.executeQuery();
-
-            while (resulto.next()){
-                product.addOvChip(new OVChipkaart(
-                        resulto.getInt("kaart_nummer"),
-                        resulto.getDate("geldig_tot"),
-                        resulto.getInt("klasse"),
-                        resulto.getDouble("saldo"),
-                        resulto.getInt("reiziger_id")
-                ));
-            }
         }
         return products;
     }
@@ -176,25 +159,7 @@ public class ProductDAOPsql implements ProductDAO {
                 resultp.getString("beschrijving"),
                 resultp.getDouble("prijs"));
 
-
-        q = "SELECT o.* FROM ov_chipkaart o\n" +
-        "JOIN ov_chipkaart_product op on o.kaart_nummer = op.kaart_nummer\n" +
-        "WHERE op.product_nummer = ?;";
-
-        pst = connection.prepareStatement(q);
-        pst.setInt(1, resultp.getInt("product_nummer"));
-        ResultSet resulto = pst.executeQuery();
-
-        while (resulto.next()){
-            product.addOvChip(new OVChipkaart(
-                    resulto.getInt("kaart_nummer"),
-                    resulto.getDate("geldig_tot"),
-                    resulto.getInt("klasse"),
-                    resulto.getDouble("saldo"),
-                    resulto.getInt("reiziger_id")
-            ));
-        }
-
+        product.setOvChipkaartList(odao.findByProduct(product.getProductNummer()));
         return product;
     }
 
@@ -211,30 +176,13 @@ public class ProductDAOPsql implements ProductDAO {
 
         while (result.next()) {
             Product product = new Product(
-                            result.getInt("product_nummer"),
-                            result.getString("naam"),
-                            result.getString("beschrijving"),
-                            result.getDouble("prijs")
-                    );
+                    result.getInt("product_nummer"),
+                    result.getString("naam"),
+                    result.getString("beschrijving"),
+                    result.getDouble("prijs")
+            );
+            product.setOvChipkaartList(odao.findByProduct(product.getProductNummer()));
             products.add(product);
-
-            q = "SELECT o.* FROM ov_chipkaart o\n" +
-                    "JOIN ov_chipkaart_product op on o.kaart_nummer = op.kaart_nummer\n" +
-                    "WHERE op.product_nummer = ?;";
-
-            pst = connection.prepareStatement(q);
-            pst.setInt(1, product.getProductNummer());
-            ResultSet resulto = pst.executeQuery();
-
-            while (resulto.next()){
-                product.addOvChip(new OVChipkaart(
-                        resulto.getInt("kaart_nummer"),
-                        resulto.getDate("geldig_tot"),
-                        resulto.getInt("klasse"),
-                        resulto.getDouble("saldo"),
-                        resulto.getInt("reiziger_id")
-                ));
-            }
         }
         return products;
     }

@@ -67,6 +67,10 @@ public class Product {
         return ovChipkaartList;
     }
 
+    public void setOvChipkaartList(List<OVChipkaart> ovChipkaartList) {
+        this.ovChipkaartList = ovChipkaartList;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

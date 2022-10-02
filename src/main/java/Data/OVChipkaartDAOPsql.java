@@ -71,7 +71,7 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO {
         String q = "SELECT * FROM ov_chipkaart WHERE reiziger_id = ?";
 
         PreparedStatement pst = connection.prepareStatement(q);
-        pst.setInt(1,reiziger.getId());
+        pst.setInt(1, reiziger.getId());
         ResultSet result = pst.executeQuery();
 
         while (result.next()) {
@@ -126,6 +126,30 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO {
                             result.getInt("reiziger_id")
                     )
             );
+        }
+        return kaarten;
+    }
+
+    @Override
+    public List<OVChipkaart> findByProduct(int productNummer) throws SQLException {
+        List<OVChipkaart> kaarten = new ArrayList<>();
+
+        String q = "SELECT o.* FROM ov_chipkaart o\n" +
+                "JOIN ov_chipkaart_product op on o.kaart_nummer = op.kaart_nummer\n" +
+                "WHERE op.product_nummer = ?;";
+
+        PreparedStatement pst = connection.prepareStatement(q);
+        pst.setInt(1, productNummer);
+        ResultSet resulto = pst.executeQuery();
+
+        while (resulto.next()) {
+            kaarten.add(new OVChipkaart(
+                    resulto.getInt("kaart_nummer"),
+                    resulto.getDate("geldig_tot"),
+                    resulto.getInt("klasse"),
+                    resulto.getDouble("saldo"),
+                    resulto.getInt("reiziger_id")
+            ));
         }
         return kaarten;
     }
