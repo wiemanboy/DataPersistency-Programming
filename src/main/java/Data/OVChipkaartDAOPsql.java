@@ -1,6 +1,7 @@
 package Data;
 
 import Data.Interfaces.OVChipkaartDAO;
+import Data.Interfaces.ProductDAO;
 import Domain.OVChipkaart;
 import Domain.Reiziger;
 
@@ -13,9 +14,14 @@ import java.util.List;
 
 public class OVChipkaartDAOPsql implements OVChipkaartDAO {
     private Connection connection;
+    private ProductDAO pdao;
 
     public OVChipkaartDAOPsql(Connection connection) {
         this.connection = connection;
+    }
+
+    public void setPdao(ProductDAO pdao) {
+        this.pdao = pdao;
     }
 
     @Override
@@ -75,14 +81,15 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO {
         ResultSet result = pst.executeQuery();
 
         while (result.next()) {
-            kaarten.add(new OVChipkaart(
-                            result.getInt("kaart_nummer"),
-                            result.getDate("geldig_tot"),
-                            result.getInt("klasse"),
-                            result.getDouble("saldo"),
-                            result.getInt("reiziger_id")
-                    )
+            OVChipkaart ovChip = new OVChipkaart(
+                    result.getInt("kaart_nummer"),
+                    result.getDate("geldig_tot"),
+                    result.getInt("klasse"),
+                    result.getDouble("saldo"),
+                    result.getInt("reiziger_id")
             );
+            ovChip.setProducts(pdao.findByOvChipkaart(ovChip));
+            kaarten.add(ovChip);
         }
         return kaarten;
     }
@@ -96,14 +103,15 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO {
         ResultSet result = pst.executeQuery();
 
         while (result.next()) {
-            kaarten.add(new OVChipkaart(
+            OVChipkaart ovChip = new OVChipkaart(
                     result.getInt("kaart_nummer"),
                     result.getDate("geldig_tot"),
                     result.getInt("klasse"),
                     result.getDouble("saldo"),
                     result.getInt("reiziger_id")
-                    )
             );
+            ovChip.setProducts(pdao.findByOvChipkaart(ovChip));
+            kaarten.add(ovChip);
         }
         return kaarten;
     }
@@ -118,14 +126,15 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO {
         ResultSet result = pst.executeQuery();
 
         while (result.next()) {
-            kaarten.add(new OVChipkaart(
+            OVChipkaart ovChip = new OVChipkaart(
                             result.getInt("kaart_nummer"),
                             result.getDate("geldig_tot"),
                             result.getInt("klasse"),
                             result.getDouble("saldo"),
                             result.getInt("reiziger_id")
-                    )
-            );
+                    );
+            ovChip.setProducts(pdao.findByOvChipkaart(ovChip));
+            kaarten.add(ovChip);
         }
         return kaarten;
     }

@@ -266,12 +266,13 @@ public class Main {
 
         OVChipkaartDAO odao = new OVChipkaartDAOPsql(connection);
         ProductDAO pdao = new ProductDAOPsql(connection, odao);
+        odao.setPdao(pdao);
         AdresDAO adao = new AdresDAOPsql(connection);
         ReizigerDAO rdao = new ReizigerDAOPsql(connection, adao, odao);
 
         //testReizigerDAO(rdao);
         //testAdresDao(adao,rdao);
-        //testOVChipDao(odao,rdao);
+        testOVChipDao(odao,rdao);
         testProductDAO(pdao, rdao);
 
         closeConnection(connection);

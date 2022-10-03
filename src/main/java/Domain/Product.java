@@ -68,7 +68,9 @@ public class Product {
     }
 
     public void setOvChipkaartList(List<OVChipkaart> ovChipkaartList) {
-        this.ovChipkaartList = ovChipkaartList;
+        for (OVChipkaart o : ovChipkaartList) {
+            addOvChip(o);
+        }
     }
 
     @Override
@@ -81,12 +83,16 @@ public class Product {
 
     @Override
     public String toString() {
+        List<String> lst = new ArrayList<>();
+        for (OVChipkaart o : ovChipkaartList) {
+            lst.add(o.getKaartNummer() + " " + o.getKlasse() + " " + o.getReizigerId() + " " + o.getSaldo() + " " + o.getGelidgTot());
+        }
         return "{" +
                 "#" + productNummer +
                 " " + naam +
                 " " + beschrijving +
                 " " + prijs +
-                " " + ovChipkaartList +
+                " " + lst +
                 '}';
     }
 }

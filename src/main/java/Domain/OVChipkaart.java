@@ -74,6 +74,16 @@ public class OVChipkaart {
         this.reizigerId = reizigerId;
     }
 
+    public void setProducts(List<Product> products) {
+        for (Product p : products) {
+            addProduct(p);
+        }
+    }
+
+    public List<Product> getProducts() {
+        return products;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -84,12 +94,17 @@ public class OVChipkaart {
 
     @Override
     public String toString() {
+        List<String> lst = new ArrayList<>();
+        for (Product p : products) {
+            lst.add(p.getProductNummer() + " " + p.getNaam() + " " + p.getBeschrijving() + " " + p.getPrijs());
+        }
         return "domain.OVChipkaart{" +
                 "#" + kaartNummer +
                 " " + gelidgTot +
                 " " + klasse +
                 " $" + saldo +
                 " " + reizigerId +
+                " " + lst +
                 '}';
     }
 }
