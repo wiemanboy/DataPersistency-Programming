@@ -3,6 +3,7 @@ package Data;
 import Data.Interfaces.OVChipkaartDAO;
 import Data.Interfaces.ProductDAO;
 import Domain.OVChipkaart;
+import Domain.Product;
 import Domain.Reiziger;
 
 import java.sql.Connection;
@@ -37,6 +38,27 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO {
         pst.setInt(5, ovChipkaart.getReizigerId());
 
         pst.execute();
+
+        for (Product p : ovChipkaart.getProducts()) {
+            q = "SELECT * FROM ov_chipkaart_product WHERE kaart_nummer = ? AND product_nummer = ?";
+            pst = connection.prepareStatement(q);
+            pst.setInt(1, ovChipkaart.getKaartNummer());
+            pst.setInt(2, p.getProductNummer());
+
+            ResultSet resultSet = pst.executeQuery();
+            if (resultSet.next()) {
+
+
+                q = "INSERT INTO ov_chipkaart_product (kaart_nummer, product_nummer) VALUES (?, ?)";
+
+                pst = connection.prepareStatement(q);
+                pst.setInt(1, ovChipkaart.getKaartNummer());
+                pst.setInt(2, p.getProductNummer());
+
+                pst.execute();
+            }
+        }
+
         return true;
     }
 
@@ -62,6 +84,26 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO {
 
     @Override
     public boolean delete(OVChipkaart ovChipkaart) throws SQLException {
+        for (Product p : ovChipkaart.getProducts()) {
+            String q = "SELECT * FROM ov_chipkaart_product WHERE kaart_nummer = ? AND product_nummer = ?";
+            PreparedStatement pst = connection.prepareStatement(q);
+            pst.setInt(1, ovChipkaart.getKaartNummer());
+            pst.setInt(2, p.getProductNummer());
+
+            ResultSet resultSet = pst.executeQuery();
+            if (resultSet.next()) {
+
+
+                q = "DELETE FROM ov_chipkaart_product WHERE kaart_nummer = ? AND product_nummer = ?";
+
+                pst = connection.prepareStatement(q);
+                pst.setInt(1, ovChipkaart.getKaartNummer());
+                pst.setInt(2, p.getProductNummer());
+
+                pst.execute();
+            }
+        }
+
         String q = "DELETE FROM ov_chipkaart WHERE kaart_nummer = ?";
         PreparedStatement pst = connection.prepareStatement(q);
         pst.setInt(1, ovChipkaart.getKaartNummer());
